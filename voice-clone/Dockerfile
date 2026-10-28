@@ -22,7 +22,10 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY app.py .
-RUN useradd --system --uid 10001 --create-home app \
+# chmod: files copied from the build context keep the host's permissions, which the non-root "app" user may not
+# be able to read (uvicorn then exits with code 1 before logging anything useful).
+RUN chmod -R a+rX /app \
+ && useradd --system --uid 10001 --create-home app \
  && mkdir -p /models /data/voices \
  && chown -R app:app /models /data
 USER app

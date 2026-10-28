@@ -32,8 +32,11 @@ COPY server ./server
 COPY public ./public
 
 # Stamp the image with the commit it was built from; the app polls this to detect new deployments.
+# chmod: files copied from the build context keep the host's permissions (e.g. 0600 with a strict umask or some
+# Windows/WSL checkouts), which the non-root "node" user can't read. Make everything world-readable (dirs traversable).
 RUN printf '{"version":"%s","commit":"%s","builtAt":"%s"}\n' "$APP_VERSION" "$GIT_COMMIT" "$BUILD_DATE" \
-      > /app/public/version.json
+      > /app/public/version.json \
+ && chmod -R a+rX /app
 
 USER node
 EXPOSE 8080
