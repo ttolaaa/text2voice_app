@@ -169,3 +169,5 @@ Dockerfile, docker-compose.yml, docker-compose.gpu.yml, .env.example
 ## Licences
 
 Kokoro-82M (Apache-2.0) and kokoro-js (Apache-2.0); Chatterbox (MIT, Resemble AI); onnxruntime-web (MIT).
+#   t e x t 2 v o i c e _ a p p  
+ 
