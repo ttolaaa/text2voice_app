@@ -57,7 +57,10 @@ export class KokoroEngine {
   }
 
   async pickConfig() {
-    if (this.devicePref !== 'cpu' && navigator.gpu) {
+    // Phones: "auto" prefers the small CPU model (~110 MB) over the 330 MB GPU model to save data and memory.
+    const mobile = navigator.userAgentData?.mobile ?? /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    const tryGpu = this.devicePref === 'gpu' || (this.devicePref === 'auto' && !mobile);
+    if (tryGpu && navigator.gpu) {
       try {
         if (await navigator.gpu.requestAdapter()) return { device: 'webgpu', dtype: 'fp32' };
       } catch {

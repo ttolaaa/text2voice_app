@@ -75,6 +75,11 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
   }
 
   async function startRecording() {
+    if (!window.isSecureContext) {
+      return setRecStatus(
+        '🔒 Browsers only allow the microphone on secure pages (https:// or localhost). Open the app over HTTPS (see the README section “Use it on your phone”), or upload a recording instead.',
+      );
+    }
     if (!VoiceRecorder.supported) return setRecStatus('Recording is not supported in this browser — upload a file instead.');
     try {
       setTake(null);

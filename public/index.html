@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1020" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f5f4ff" media="(prefers-color-scheme: light)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Storyteller">
   <title>Storyteller — Text to Voice</title>
   <meta name="description" content="Turn text into expressive, story-like speech right in your browser.">
   <meta name="color-scheme" content="dark light">
@@ -63,7 +68,8 @@
         placeholder="Type or paste your story here… Select words and use the tools above to add pauses, pitch changes and questions."></textarea>
       <div class="meta-row">
         <span id="char-count">0 characters</span>
-        <span class="hint">Select text, then click a tool · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> play · <kbd>Esc</kbd> stop</span>
+        <span class="hint kbd-hint">Select text, then click a tool · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> play · <kbd>Esc</kbd> stop</span>
+        <span class="hint touch-hint">Select words, then tap a tool above</span>
       </div>
 
       <details class="help">
@@ -115,7 +121,7 @@
       <label id="device-field" class="field compact" hidden>
         <span>Run natural voices on</span>
         <select id="kokoro-device">
-          <option value="auto">Auto — graphics card when available</option>
+          <option value="auto">Auto — graphics card on computers, processor on phones</option>
           <option value="gpu">Graphics card (fastest, ~330 MB once)</option>
           <option value="cpu">Processor (smaller ~110 MB, slower)</option>
         </select>

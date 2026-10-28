@@ -1,0 +1,7 @@
+# Automatic HTTPS in front of the app (needed for the microphone, fast voices and phones).
+# Set DOMAIN in .env, point the domain's DNS at this server, open ports 80 + 443, then:
+#   COMPOSE_PROFILES=https docker compose up -d
+# Caddy obtains and renews a free Let's Encrypt certificate automatically.
+{$DOMAIN:localhost} {
+	reverse_proxy text2voice:8080
+}

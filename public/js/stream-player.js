@@ -1,4 +1,6 @@
 // Gapless Web Audio playback of audio that arrives piece by piece while it is still being generated.
+// Mobile-safe: the AudioContext is started (and "unlocked" on iOS) inside the user's tap and is never
+// suspended by script while buffering; held audio is queued and scheduled when release() is called.
 
 export class StreamPlayer {
   constructor({ onStateChange = () => {} } = {}) {
@@ -16,24 +18,37 @@ export class StreamPlayer {
   /** Must be called synchronously from a user gesture so the AudioContext may start. */
   begin({ label = null, volume = 1, onUnit = () => {}, hold = false } = {}) {
     this.stop();
+    // iOS: play Web Audio even when the ring/silent switch is set to silent (Safari 16.4+).
+    if (navigator.audioSession) {
+      try {
+        navigator.audioSession.type = 'playback';
+      } catch {
+        /* not supported */
+      }
+    }
     const Ctx = window.AudioContext || window.webkitAudioContext;
     this.ctx = new Ctx();
     this.ctx.resume?.();
+    // iOS unlock: start a tiny silent buffer during the tap so later audio is allowed to play.
+    const unlock = this.ctx.createBufferSource();
+    unlock.buffer = this.ctx.createBuffer(1, 1, this.ctx.sampleRate);
+    unlock.connect(this.ctx.destination);
+    unlock.start(0);
+
     this.gain = this.ctx.createGain();
     this.gain.gain.value = volume;
     this.gain.connect(this.ctx.destination);
     this.cursor = this.ctx.currentTime + 0.15;
-    this.startCursor = this.cursor;
+    this.queued = 0;
+    this.pending = [];
     this.marks = [];
     this.sources = [];
     this.finished = false;
     this.onUnit = onUnit;
     this.currentUnit = null;
     this.label = label;
-    // "hold" buffers audio silently until release(), so slow generation doesn't cause gaps.
+    // "hold" collects audio silently until release(), so slow generation doesn't cause gaps.
     this.holding = hold;
-    this.userPaused = false;
-    if (hold) this.ctx.suspend();
     this.setState('playing');
     this.timer = setInterval(() => this.tick(), 80);
   }
@@ -42,21 +57,27 @@ export class StreamPlayer {
     return Boolean(this.ctx);
   }
 
-  /** Seconds of audio (including pauses) queued so far. */
+  /** Seconds of audio (including pauses) produced so far. */
   get queuedSeconds() {
-    return this.ctx ? this.cursor - this.startCursor : 0;
+    return this.ctx ? this.queued : 0;
   }
 
   /** True when playback has caught up with generation (listener is waiting). */
   get starved() {
-    return this.ctx && !this.holding && !this.finished && this.ctx.currentTime > this.cursor;
+    return Boolean(this.ctx && !this.holding && !this.finished && this.ctx.currentTime > this.cursor);
   }
 
-  /** Starts audible playback of buffered audio (no-op unless holding). */
+  /** Starts audible playback of held audio (no-op unless holding). */
   release() {
     if (!this.ctx || !this.holding) return;
     this.holding = false;
-    if (!this.userPaused) this.ctx.resume();
+    this.cursor = this.ctx.currentTime + 0.1;
+    const pending = this.pending;
+    this.pending = [];
+    for (const p of pending) {
+      if (p.buffer) this.schedule(p.buffer, p.marks);
+      else this.cursor += p.seconds;
+    }
   }
 
   addPcm(samples, sampleRate, unit = null) {
@@ -68,6 +89,19 @@ export class StreamPlayer {
 
   addBuffer(buffer, marks = []) {
     if (!this.ctx) return;
+    this.queued += buffer.duration;
+    if (this.holding) this.pending.push({ buffer, marks });
+    else this.schedule(buffer, marks);
+  }
+
+  addSilence(ms) {
+    if (!this.ctx) return;
+    this.queued += ms / 1000;
+    if (this.holding) this.pending.push({ seconds: ms / 1000 });
+    else this.cursor = Math.max(this.cursor, this.ctx.currentTime) + ms / 1000;
+  }
+
+  schedule(buffer, marks) {
     const src = this.ctx.createBufferSource();
     src.buffer = buffer;
     src.connect(this.gain);
@@ -81,11 +115,6 @@ export class StreamPlayer {
     this.cursor = start + buffer.duration;
   }
 
-  addSilence(ms) {
-    if (!this.ctx) return;
-    this.cursor = Math.max(this.cursor, this.ctx.currentTime) + ms / 1000;
-  }
-
   /** Signals that no more audio will be added; playback ends after what is queued. */
   end() {
     this.finished = true;
@@ -93,7 +122,7 @@ export class StreamPlayer {
   }
 
   tick() {
-    if (!this.ctx) return;
+    if (!this.ctx || this.holding) return;
     const now = this.ctx.currentTime;
     let unit = null;
     for (const m of this.marks) {
@@ -111,17 +140,16 @@ export class StreamPlayer {
     if (this.gain) this.gain.gain.value = v;
   }
 
+  // pause()/resume() are only called from button taps, so they are allowed on mobile.
   pause() {
     if (this.state !== 'playing' || !this.ctx) return;
-    this.userPaused = true;
     this.ctx.suspend();
     this.setState('paused');
   }
 
   resume() {
     if (this.state !== 'paused' || !this.ctx) return;
-    this.userPaused = false;
-    if (!this.holding) this.ctx.resume();
+    this.ctx.resume();
     this.setState('playing');
   }
 
@@ -138,6 +166,7 @@ export class StreamPlayer {
     this.ctx.close().catch(() => {});
     this.ctx = null;
     this.sources = [];
+    this.pending = [];
     this.onUnit(null);
     this.label = null;
     this.setState('idle');

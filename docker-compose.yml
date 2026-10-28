@@ -1,3 +1,5 @@
+name: text2voice # fixed project name, whatever the folder is called (keeps deploy.sh and manual commands in sync)
+
 services:
   text2voice:
     build:
@@ -16,6 +18,8 @@ services:
       AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-}
       # "My Voice" cloning service on the private compose network. Set to empty to disable.
       CLONE_URL: ${CLONE_URL-http://voice-clone:8000}
+      # 1 when running behind the bundled Caddy (or another) reverse proxy, so rate limits see real client IPs.
+      TRUST_PROXY: ${TRUST_PROXY:-0}
     restart: unless-stopped
     read_only: true
     tmpfs:
@@ -41,6 +45,27 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  # Optional automatic HTTPS (Let's Encrypt). Enable with COMPOSE_PROFILES=https and DOMAIN=your.domain in .env.
+  caddy:
+    image: caddy:2-alpine
+    container_name: text2voice-caddy
+    profiles: ["https"]
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # certificates
+      - caddy-config:/config
+    depends_on:
+      - text2voice
+    restart: unless-stopped
+
 volumes:
   clone-models:
   clone-voices:
+  caddy-data:
+  caddy-config:
