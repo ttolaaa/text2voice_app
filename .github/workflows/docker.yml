@@ -1,7 +1,7 @@
-name: Build & publish Docker image
+name: Build & publish Docker images
 
-# Every push to main/master runs the tests, then builds and publishes a fresh image tagged
-# with the commit SHA and `latest`, so the registry always holds the newest committed version.
+# Every push to main/master runs the tests, then builds and publishes fresh images tagged with the
+# commit SHA and `latest`, so the registry always holds the newest committed version.
 on:
   push:
     branches: [main, master]
@@ -17,17 +17,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Unit tests
         run: node --test
+      - name: Python syntax check (voice-clone)
+        run: python3 -m py_compile voice-clone/app.py
+
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: app
+            context: .
+            image: ghcr.io/${{ github.repository }}
+          - name: voice-clone
+            context: ./voice-clone
+            image: ghcr.io/${{ github.repository }}-voice-clone
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space for the large PyTorch image
+        if: matrix.name == 'voice-clone'
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
 
       - name: Read app version
         id: app
@@ -47,7 +66,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ matrix.image }}
           tags: |
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
@@ -55,7 +74,7 @@ jobs:
       - name: Build (and push on main)
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ${{ matrix.context }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -63,5 +82,5 @@ jobs:
             APP_VERSION=${{ steps.app.outputs.version }}
             GIT_COMMIT=${{ github.sha }}
             BUILD_DATE=${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}

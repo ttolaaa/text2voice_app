@@ -89,6 +89,37 @@
           <select id="lang-select" aria-label="Language"></select>
         </label>
       </div>
+      <div class="engine-picker" role="radiogroup" aria-label="Voice engine">
+        <label class="engine-option" data-engine="kokoro">
+          <input type="radio" name="engine" value="kokoro">
+          <span><strong>✨ Natural</strong><small>Neural · on device</small></span>
+        </label>
+        <label class="engine-option" data-engine="azure">
+          <input type="radio" name="engine" value="azure">
+          <span><strong>☁️ Azure</strong><small id="azure-sub">Neural · cloud</small></span>
+        </label>
+        <label class="engine-option" data-engine="browser">
+          <input type="radio" name="engine" value="browser">
+          <span><strong>🖥️ Basic</strong><small>Browser voices</small></span>
+        </label>
+        <label class="engine-option" data-engine="myvoice">
+          <input type="radio" name="engine" value="myvoice">
+          <span><strong>🎤 My Voice</strong><small id="myvoice-sub">Your own voice</small></span>
+        </label>
+      </div>
+      <p id="engine-note" class="hint"></p>
+      <div id="load-row" class="load-row" hidden>
+        <progress id="load-progress" max="1" value="0"></progress>
+        <span id="load-text" class="hint"></span>
+      </div>
+      <label id="device-field" class="field compact" hidden>
+        <span>Run natural voices on</span>
+        <select id="kokoro-device">
+          <option value="auto">Auto — graphics card when available</option>
+          <option value="gpu">Graphics card (fastest, ~330 MB once)</option>
+          <option value="cpu">Processor (smaller ~110 MB, slower)</option>
+        </select>
+      </label>
       <div class="gender-grid" role="radiogroup" aria-label="Voice type">
         <div class="gender-option" data-gender="female">
           <label class="gender-pick">
@@ -109,6 +140,19 @@
           <button type="button" class="btn sample-btn" data-sample="male">▶ Hear sample</button>
         </div>
       </div>
+      <div id="myvoice-panel" class="myvoice-panel" hidden>
+        <p id="myvoice-empty">
+          <strong>Speak any script in your own voice.</strong> Record about 30 seconds of yourself reading a short
+          story. Your recording stays on this server, and your voice can only be used from this browser.
+        </p>
+        <div id="myvoice-has" class="myvoice-row" hidden>
+          <select id="myvoice-select" aria-label="My voice"></select>
+          <button type="button" class="btn sample-btn" data-sample="myvoice">▶ Hear sample</button>
+          <button type="button" id="myvoice-delete" class="btn ghost small" title="Delete this voice from the server">🗑 Delete</button>
+        </div>
+        <button type="button" id="myvoice-new" class="btn">🎤 Create my voice</button>
+        <p id="myvoice-status" class="hint" role="status"></p>
+      </div>
       <p id="voice-hint" class="hint"></p>
     </section>
 
@@ -127,6 +171,16 @@
           <option value="rise">Strong rise at the end</option>
           <option value="off">Off</option>
         </select>
+      </label>
+
+      <label class="field" id="style-field" hidden>
+        <span>Speaking style <small class="inline-small">(Azure)</small></span>
+        <select id="style-select"></select>
+      </label>
+
+      <label class="field range" id="expressive-field" hidden>
+        <span>Expressiveness <small class="inline-small">(My Voice)</small> <output id="expressive-out" for="expressive"></output></span>
+        <input type="range" id="expressive" min="0.25" max="1.25" step="0.05">
       </label>
 
       <label class="field range">
@@ -170,7 +224,47 @@
   <footer class="player" aria-label="Playback">
     <button id="play-btn" class="btn primary" type="button">▶ Play</button>
     <button id="stop-btn" class="btn" type="button" disabled>■ Stop</button>
-    <div id="status" class="status" role="status" aria-live="polite">Ready</div>
+    <button id="download-btn" class="btn" type="button">⬇ Download</button>
+    <div class="status-wrap">
+      <div id="status" class="status" role="status" aria-live="polite">Ready</div>
+      <progress id="job-progress" max="1" value="0" hidden></progress>
+    </div>
   </footer>
+
+  <dialog id="record-dialog" class="record-dialog" aria-labelledby="record-title">
+    <div class="record-body">
+      <h2 id="record-title">🎤 Create your voice</h2>
+
+      <label class="field">
+        <span>Voice name</span>
+        <input id="rec-name" type="text" maxlength="40" placeholder="e.g. My storytelling voice" autocomplete="off">
+      </label>
+      <label class="consent">
+        <input type="checkbox" id="rec-consent">
+        <span>This is <strong>my own voice</strong>. I consent to creating a synthetic copy of it, and I won't use this
+          feature to imitate anyone else. (Generated audio carries an inaudible watermark marking it as AI-made.)</span>
+      </label>
+
+      <p class="hint">In a quiet room, read this aloud at your natural pace, with feeling, as if you're telling a story:</p>
+      <blockquote id="rec-script" class="rec-script"></blockquote>
+
+      <div class="rec-controls">
+        <button type="button" id="rec-btn" class="btn">● Record</button>
+        <span id="rec-time" class="rec-time">0:00</span>
+        <progress id="rec-level" max="1" value="0" aria-label="Microphone level"></progress>
+      </div>
+      <audio id="rec-playback" controls hidden></audio>
+      <label class="upload">
+        <span>…or upload a recording of yourself (WAV, MP3, M4A…)</span>
+        <input type="file" id="rec-file" accept="audio/*">
+      </label>
+      <p id="rec-status" class="hint" role="status"></p>
+
+      <div class="dialog-actions">
+        <button type="button" id="rec-cancel" class="btn ghost">Cancel</button>
+        <button type="button" id="rec-create" class="btn primary" disabled>Create voice</button>
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

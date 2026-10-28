@@ -120,6 +120,17 @@ test('punctuation after a closing tag attaches to the previous phrase', () => {
   assert.equal(speaks(plan)[0].text, 'Is it you?');
 });
 
+test('neural engines get whole sentences and unsplit questions', () => {
+  const text = 'Once upon a time, in a land far away, there lived a fox. Will tomorrow bring a brand new adventure?';
+  const neural = buildPlan(text, { storyteller: true, question: 'rise', splitClauses: false, splitQuestions: false });
+  assert.deepEqual(speaks(neural).map((s) => s.text), [
+    'Once upon a time, in a land far away, there lived a fox.',
+    'Will tomorrow bring a brand new adventure?',
+  ]);
+  assert.ok(speaks(neural)[1].pitch > 1.1, 'question still lifted');
+  assert.equal(pauses(neural).length, 1, 'sentence pause kept');
+});
+
 test('empty and tag-only input yields an empty plan', () => {
   assert.deepEqual(buildPlan('').items, []);
   assert.deepEqual(buildPlan('   [pause 2s]  ').items, []);

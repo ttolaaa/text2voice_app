@@ -66,14 +66,16 @@ export function listLanguages(voices, displayLocale = 'en') {
     .sort((a, b) => a.label.localeCompare(b.label));
 }
 
-/** Groups voices into female / male / unknown, best-sounding first. */
+/** Groups voices into female / male / unknown, best-sounding first. Accepts any {name, lang, gender?, quality?}. */
 export function groupVoices(voices, lang = 'all') {
   const groups = { female: [], male: [], unknown: [] };
   for (const v of voices) {
     if (lang !== 'all' && languageOf(v) !== lang) continue;
-    groups[classifyVoice(v)].push(v);
+    const gender = v.gender === 'female' || v.gender === 'male' ? v.gender : classifyVoice(v);
+    groups[gender].push(v);
   }
-  const byQuality = (a, b) => voiceQuality(b) - voiceQuality(a) || a.name.localeCompare(b.name);
+  const score = (v) => (typeof v.quality === 'number' ? v.quality : voiceQuality(v));
+  const byQuality = (a, b) => score(b) - score(a) || a.name.localeCompare(b.name);
   Object.values(groups).forEach((list) => list.sort(byQuality));
   return groups;
 }

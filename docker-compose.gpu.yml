@@ -1,0 +1,16 @@
+# NVIDIA GPU for "My Voice" (much faster cloning/synthesis). Requires the NVIDIA Container Toolkit.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+services:
+  voice-clone:
+    build:
+      args:
+        TORCH_INDEX: https://download.pytorch.org/whl/cu124
+    environment:
+      DEVICE: cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

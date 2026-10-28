@@ -10,9 +10,37 @@ services:
     container_name: text2voice
     ports:
       - "${PORT:-8080}:8080"
+    environment:
+      # Optional Azure AI Speech voices (put these in a .env file next to this compose file).
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-}
+      # "My Voice" cloning service on the private compose network. Set to empty to disable.
+      CLONE_URL: ${CLONE_URL-http://voice-clone:8000}
     restart: unless-stopped
     read_only: true
     tmpfs:
       - /tmp
     security_opt:
       - no-new-privileges:true
+
+  voice-clone:
+    build:
+      context: ./voice-clone
+    image: text2voice-voice-clone:latest
+    container_name: text2voice-voice-clone
+    # Not published: only reachable by the app over the internal network.
+    expose:
+      - "8000"
+    environment:
+      DEVICE: ${CLONE_DEVICE:-auto}
+      CLONE_MODEL: ${CLONE_MODEL:-turbo}
+    volumes:
+      - clone-models:/models # Chatterbox weights (~3 GB), downloaded on first start
+      - clone-voices:/data/voices # users' cloned voices
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  clone-models:
+  clone-voices:

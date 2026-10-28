@@ -151,11 +151,15 @@ const speakStep = (text, pitch, rate, unit) => ({
 
 /**
  * Builds a performance plan.
- * options: storyteller (bool), question ('natural' | 'rise' | 'off'), pitch, rate, pauseScale.
+ * options: storyteller (bool), question ('natural' | 'rise' | 'off'), pitch, rate, pauseScale,
+ *   splitClauses (default: storyteller) - speak comma clauses separately with breathing pauses,
+ *   splitQuestions (default: true) - in 'rise' mode, speak the last words of a question separately.
+ * Neural voices sound best with whole sentences, so they pass splitClauses/splitQuestions = false.
  * Returns { items: [{type:'speak'|'pause', ...}], units: [{id, text, question, exclaim, emph, pitch, rate}] }.
  */
 export function buildPlan(text, options = {}) {
-  const opts = { storyteller: true, question: 'natural', pitch: 1, rate: 1, pauseScale: 1, ...options };
+  const opts = { storyteller: true, question: 'natural', pitch: 1, rate: 1, pauseScale: 1, splitQuestions: true, ...options };
+  const splitClauses = opts.splitClauses ?? opts.storyteller;
   const scale = clamp(Number(opts.pauseScale) || 1, 0.25, 4);
   const segments = parseMarkup(String(text || ''), Math.round(BASE_PAUSE_MS * scale));
 
@@ -165,7 +169,7 @@ export function buildPlan(text, options = {}) {
       entries.push(seg);
       continue;
     }
-    for (const u of splitUnits(seg.text, opts.storyteller)) {
+    for (const u of splitUnits(seg.text, splitClauses)) {
       if (!/[\p{L}\p{N}]/u.test(u.text)) {
         // Punctuation-only fragment (e.g. "?" right after a closing tag) belongs to the previous phrase.
         const prev = entries[entries.length - 1];
@@ -222,7 +226,7 @@ export function buildPlan(text, options = {}) {
 
     if (question && opts.question === 'rise') {
       const words = spoken.split(/\s+/);
-      if (words.length > 4) {
+      if (words.length > 4 && opts.splitQuestions) {
         items.push(speakStep(words.slice(0, -3).join(' '), pitch, rate, id));
         items.push(speakStep(words.slice(-3).join(' '), pitch * 1.22, rate * 0.95, id));
       } else {

@@ -1,9 +1,14 @@
 .git
 .github
 .githooks
-tests
-scripts
+.env
+.env.*
 node_modules
+tests
+voice-clone
+public/vendor
+public/models
 *.md
 *.log
-.env
+scripts/*.sh
+scripts/*.ps1

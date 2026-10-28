@@ -1,16 +1,17 @@
 {
   "name": "text2voice",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Storyteller - expressive, client-side text to voice web app",
+  "description": "Storyteller - expressive text to voice web app with natural, Azure and cloned voices",
   "type": "module",
   "scripts": {
-    "start": "python -m http.server 8080 --directory public",
+    "start": "node server/index.js",
+    "assets": "node scripts/fetch-assets.mjs",
     "test": "node --test",
     "hooks": "git config core.hooksPath .githooks",
     "deploy": "sh scripts/deploy.sh"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
