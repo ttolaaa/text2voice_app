@@ -1,0 +1,16 @@
+{
+  "name": "text2voice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Storyteller - expressive, client-side text to voice web app",
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 8080 --directory public",
+    "test": "node --test",
+    "hooks": "git config core.hooksPath .githooks",
+    "deploy": "sh scripts/deploy.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

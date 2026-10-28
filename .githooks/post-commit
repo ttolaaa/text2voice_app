@@ -1,0 +1,5 @@
+#!/bin/sh
+# Redeploy the Docker container after every commit so it always runs the latest committed code.
+# A failed deploy never blocks your commit (it has already been recorded).
+sh "$(git rev-parse --show-toplevel)/scripts/deploy.sh" || echo "[text2voice] Auto-deploy failed - run scripts/deploy.sh to retry."
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Run the unit tests before each commit so broken code never gets auto-deployed.
+# Skip with: git commit --no-verify
+if command -v node >/dev/null 2>&1; then
+  cd "$(git rev-parse --show-toplevel)" || exit 1
+  node --test || {
+    echo "[text2voice] Tests failed - commit aborted (use --no-verify to bypass)."
+    exit 1
+  }
+fi
+exit 0

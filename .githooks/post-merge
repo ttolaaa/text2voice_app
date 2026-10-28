@@ -1,0 +1,4 @@
+#!/bin/sh
+# Redeploy after `git pull` / `git merge` so the container matches the newly merged code.
+sh "$(git rev-parse --show-toplevel)/scripts/deploy.sh" || echo "[text2voice] Auto-deploy failed - run scripts/deploy.sh to retry."
+exit 0

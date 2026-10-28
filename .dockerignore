@@ -1,0 +1,9 @@
+.git
+.github
+.githooks
+tests
+scripts
+node_modules
+*.md
+*.log
+.env
