@@ -123,6 +123,58 @@ git config core.hooksPath .githooks      # or: ./scripts/install-hooks.ps1  /  s
 **CI/CD:** `.github/workflows/docker.yml` runs the tests, then builds `ghcr.io/<owner>/<repo>` and
 `ghcr.io/<owner>/<repo>-voice-clone`. On pushes to `main`/`master` it publishes them (`:latest` and `:sha-…`).
 
+## Push to GitHub
+
+This project lives at **https://github.com/ttolaaa/text2voice_app**.
+
+### Everyday: save and publish a change
+
+```powershell
+git add -A                          # stage everything you changed
+git commit -m "Describe the change" # runs the tests first; redeploys Docker locally if installed
+git push                            # uploads to GitHub; GitHub Actions then builds the images
+```
+
+Check the **Actions** tab on GitHub to watch the build. The voice-clone image is large (~5 GB), so the first build
+takes about 10–15 minutes.
+
+### First time on a new computer
+
+```powershell
+git clone https://github.com/ttolaaa/text2voice_app.git
+cd text2voice_app
+git config core.hooksPath .githooks   # enable the test + auto-deploy hooks (hooks aren't cloned)
+copy .env.example .env                # optional: add Azure keys
+docker compose up -d --build          # http://localhost:8080
+```
+
+### Connecting a brand-new repository
+
+Only needed if you publish this project to a different, empty GitHub repository:
+
+```powershell
+git remote add origin https://github.com/<your-username>/<repo>.git
+git push -u origin main               # -u makes later pushes a plain `git push`
+```
+
+The first push opens a browser window to sign in to GitHub. Git for Windows remembers the login after that.
+
+### Troubleshooting
+
+| Message | Fix |
+| --- | --- |
+| `fatal: No configured push destination` | No GitHub repository is linked yet. Run `git remote add origin <repo-url>`, then `git push -u origin main`. |
+| `remote origin already exists` | Already linked. Check it with `git remote -v`, or change it with `git remote set-url origin <repo-url>`. |
+| `rejected … (fetch first)` / `non-fast-forward` | GitHub has commits you don't have (e.g. edited online). Run `git pull --rebase`, then `git push`. |
+| `Authentication failed` | Sign in again when prompted, or use a [personal access token](https://github.com/settings/tokens) as the password. |
+| Tests fail and the commit is aborted | Fix the failing test (`node --test`), or bypass once with `git commit --no-verify`. |
+
+> **Tip:** don't run GitHub's quick-start line `echo "# name" >> README.md` in Windows PowerShell 5.1. It appends
+> UTF-16 text, which corrupts a UTF-8 README. Edit the file in VS Code instead.
+
+**Never commit secrets.** `.env` (your Azure key), downloaded voice models (`public/vendor`, `public/models`) and
+voice-clone data are already in `.gitignore`.
+
 ## Local development (without Docker)
 
 ```powershell
@@ -169,5 +221,3 @@ Dockerfile, docker-compose.yml, docker-compose.gpu.yml, .env.example
 ## Licences
 
 Kokoro-82M (Apache-2.0) and kokoro-js (Apache-2.0); Chatterbox (MIT, Resemble AI); onnxruntime-web (MIT).
-#   t e x t 2 v o i c e _ a p p  
- 
