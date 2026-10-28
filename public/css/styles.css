@@ -113,8 +113,12 @@ code, kbd {
 .preview-card { grid-area: preview; }
 
 @media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; grid-template-areas: "script" "voice" "delivery" "preview"; }
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "script" "voice" "delivery" "preview"; }
 }
+/* Let grid/flex children shrink below their content's natural width (long <select> options, etc.). */
+.layout > *, .card, .field, .gender-option, .engine-option, .myvoice-row > * { min-width: 0; }
+.field select, .gender-option select, #lang-select { width: 100%; max-width: 100%; text-overflow: ellipsis; }
+.card-head .inline-field { flex: 0 1 auto; min-width: 0; max-width: 60%; }
 
 .card {
   background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius);
@@ -175,7 +179,7 @@ textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3
 .help p { font-size: 0.85rem; color: var(--muted); }
 
 /* ---------- Engine picker ---------- */
-.engine-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.engine-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .engine-option {
   border: 2px solid var(--card-border); border-radius: 12px; padding: 8px 10px; cursor: pointer;
   display: flex; align-items: center; gap: 8px; transition: border-color 0.2s, background 0.2s; font-size: 0.9rem;
@@ -223,8 +227,8 @@ textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3
 .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
 /* ---------- Voice ---------- */
-.gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media (max-width: 420px) { .gender-grid { grid-template-columns: 1fr; } }
+.gender-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 420px) { .gender-grid { grid-template-columns: minmax(0, 1fr); } }
 .gender-option {
   border: 2px solid var(--card-border); border-radius: 14px; padding: 12px;
   display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: border-color 0.2s, background 0.2s;

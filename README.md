@@ -3,6 +3,75 @@
 Type a story and hear it read aloud by a natural voice, or **in your own voice**. Add pauses and questions, then
 download it as an audio file. It works on computers and phones.
 
+![Storyteller main screen](docs/images/01-overview.png)
+
+---
+
+## 📖 How to use
+
+### 1. Write your script
+Type or paste your text into **Your script**, or click **Load example** to try a short story.
+
+To add expression, **select some words** and tap a tool:
+⏸ **Pause** · ↑ **Pitch high** · ↓ **Pitch low** · 🐢 **Slow** · 🐇 **Fast** · ✨ **Emphasis** · ❓ **Question**.
+The tool wraps your selection in a small tag such as `[slow]…[/slow]`. You can also type tags yourself.
+
+![Select words, then tap a tool](docs/images/02-script.png)
+
+### 2. Choose a voice
+At the top of **Voice**, pick a voice type:
+
+| | |
+| --- | --- |
+| ✨ **Natural** | Human-like voices. Free, and they run on your device. *(Recommended)* |
+| 🎤 **My Voice** | Speaks in **your own voice** (see step 5) |
+| ☁️ **Azure** | 400+ voices and languages (needs an Azure key) |
+| 🖥️ **Basic** | Your browser's built-in voices (robotic) |
+
+Then choose 👩 **Lady** or 👨 **Man**, pick a voice from the list, and tap **▶ Hear sample** to listen.
+The letter after each name is a quality grade (**A** is best).
+
+<img src="docs/images/03-voice.png" alt="Choose a voice engine, then Lady or Man" width="440">
+
+### 3. Adjust the delivery (optional)
+- **Storyteller mode** adds natural breathing pauses and livelier expression.
+- **Question intonation** changes how questions rise at the end.
+- Change **Speed**, **Pitch**, **Pause length** and **Volume**. **Reset delivery** restores the defaults.
+
+<img src="docs/images/04-delivery.png" alt="Delivery settings" width="440">
+
+### 4. Play and download
+Tap **▶ Play**. The **Performance preview** highlights each sentence as it's spoken and shows every pause.
+Tap **⬇ Download** to save the audio (WAV, or MP3 for Azure voices).
+
+![Playing, with the current sentence highlighted](docs/images/05-playing.png)
+
+### 5. Use your own voice 🎤
+1. Choose **🎤 My Voice**, then tap **Create my voice**.
+2. Type a name and tick the consent box (it must be **your own** voice).
+3. Tap **● Record** and read the passage on screen for **20–30 seconds** in a quiet room. You can also upload a
+   recording of yourself.
+4. Tap **Create voice**. In about a minute, everything you type plays in your voice.
+
+<img src="docs/images/06-myvoice.png" alt="My Voice panel" width="440">
+
+![Create your voice: name, consent, then record](docs/images/07-record.png)
+
+> 💡 For the best result, start speaking right away and read with the feeling you want, such as warmly or like a
+> storyteller. The clone copies your style.
+
+### 📱 On a phone
+The same app adapts to small screens:
+
+<p>
+  <img src="docs/images/08-phone.png" alt="Storyteller on a phone: script" width="260">
+  &nbsp;
+  <img src="docs/images/09-phone-voices.png" alt="Storyteller on a phone: voices" width="260">
+</p>
+
+To **record your voice** on a phone, open the app through an `https://` address (see
+[On your phone](#-on-your-phone) below).
+
 ---
 
 ## 🚀 Start it (5 minutes)
@@ -18,31 +87,6 @@ download it as an audio file. It works on computers and phones.
 3. Open **http://localhost:8080** in your browser.
 
 The first start takes a while because it downloads the voice models. After that it starts in seconds.
-
----
-
-## 📖 How to use
-
-1. **Type your text** in *Your script*, or click **Load example**.
-2. **Pick a voice:** choose 👩 **Lady** or 👨 **Man**, then tap **▶ Hear sample** to listen.
-3. **Add expression (optional):** select some words and tap a tool:
-   ⏸ **Pause** · ↑ **Pitch high** · ↓ **Pitch low** · 🐢 **Slow** · 🐇 **Fast** · ✨ **Emphasis** · ❓ **Question**
-4. Tap **▶ Play** to listen, or **⬇ Download** to save the audio.
-
-**Voice types** (at the top of the *Voice* box):
-
-| | |
-| --- | --- |
-| ✨ **Natural** | Human-like voices. Free, and they run on your device. *(Recommended)* |
-| 🎤 **My Voice** | Speaks in **your own voice** (see below) |
-| ☁️ **Azure** | 400+ voices and languages (needs an Azure key) |
-| 🖥️ **Basic** | Your browser's built-in voices (robotic) |
-
-### 🎤 Use your own voice
-1. Choose **🎤 My Voice**, then **Create my voice**.
-2. Type a name and tick the consent box (it must be **your** voice).
-3. Tap **● Record** and read the passage on screen for **20–30 seconds** in a quiet room.
-4. Tap **Create voice**. In about a minute, everything you type plays in your voice.
 
 ---
 
