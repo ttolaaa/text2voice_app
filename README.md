@@ -1,349 +1,170 @@
 # 🎙️ Storyteller — Text to Voice
 
-Turn any text into speech that sounds like a storyteller. You can pick a natural **lady or man** voice, or use your
-**own cloned voice**. Add pauses, pitch changes and question intonation, then **play it or download it** as an
-audio file. It works in desktop and mobile browsers.
-
-- ✨ **28 natural voices** (American and British English) that run inside your browser
-- 🎤 **My Voice**: record about 30 seconds of yourself, then any script plays in your voice
-- ☁️ **Azure voices** (optional): 400+ Microsoft voices in 140+ languages, with speaking styles
-- ⏸️ Pauses, ↑↓ pitch, 🐢🐇 speed, ✨ emphasis and ❓ question tools, plus **Storyteller mode**
-- ⬇️ Download as **WAV** or **MP3**
-- 📱 Responsive design for phones and tablets
-- 🐳 One-command **Docker** deployment, with automatic HTTPS and auto-redeploy on every commit
+Type a story and hear it read aloud by a natural voice, or **in your own voice**. Add pauses and questions, then
+download it as an audio file. It works on computers and phones.
 
 ---
 
-## Contents
+## 🚀 Start it (5 minutes)
 
-1. [Quick start](#-quick-start)
-2. [How to use](#-how-to-use)
-3. [Use it on your phone](#-use-it-on-your-phone)
-4. [Deploy with Docker](#-deploy-with-docker)
-5. [Auto-update on every commit](#-auto-update-on-every-commit)
-6. [Push to GitHub](#-push-to-github)
-7. [Local development](#-local-development-without-docker)
-8. [Privacy and security](#-privacy-and-security)
-9. [Project layout](#-project-layout)
+1. Install **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** and open it.
+2. Open a terminal and run:
+   ```powershell
+   git clone https://github.com/ttolaaa/text2voice_app.git
+   cd text2voice_app
+   copy .env.example .env
+   docker compose up -d --build
+   ```
+3. Open **http://localhost:8080** in your browser.
 
----
-
-## 🚀 Quick start
-
-You need [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) or Docker Engine (Linux).
-
-```powershell
-git clone https://github.com/ttolaaa/text2voice_app.git
-cd text2voice_app
-copy .env.example .env          # Linux/Mac: cp .env.example .env
-docker compose up -d --build
-```
-
-Open **http://localhost:8080**. The first build downloads the voice models, which takes several minutes. Later
-starts are fast.
+The first start takes a while because it downloads the voice models. After that it starts in seconds.
 
 ---
 
 ## 📖 How to use
 
-### 1. Write your script
-Type or paste text into **Your script**, or click **Load example** to try a short story. Your text is saved
-automatically in your browser.
+1. **Type your text** in *Your script*, or click **Load example**.
+2. **Pick a voice:** choose 👩 **Lady** or 👨 **Man**, then tap **▶ Hear sample** to listen.
+3. **Add expression (optional):** select some words and tap a tool:
+   ⏸ **Pause** · ↑ **Pitch high** · ↓ **Pitch low** · 🐢 **Slow** · 🐇 **Fast** · ✨ **Emphasis** · ❓ **Question**
+4. Tap **▶ Play** to listen, or **⬇ Download** to save the audio.
 
-### 2. Choose a voice engine
+**Voice types** (at the top of the *Voice* box):
 
-| Engine | Best for | Download format |
-| --- | --- | --- |
-| ✨ **Natural** (default) | Human-like lady and man voices, free, private (runs on your device) | WAV |
-| 🎤 **My Voice** | Speaking in **your own voice** | WAV |
-| ☁️ **Azure** | Many languages and speaking styles (needs an Azure key, see [Configuration](#configuration)) | MP3 |
-| 🖥️ **Basic** | Instant, offline browser voices (robotic; can't be downloaded) | — |
+| | |
+| --- | --- |
+| ✨ **Natural** | Human-like voices. Free, and they run on your device. *(Recommended)* |
+| 🎤 **My Voice** | Speaks in **your own voice** (see below) |
+| ☁️ **Azure** | 400+ voices and languages (needs an Azure key) |
+| 🖥️ **Basic** | Your browser's built-in voices (robotic) |
 
-The first time you play a **Natural** voice, the browser downloads the voice model once (~110–330 MB) and caches it.
-
-### 3. Pick a lady or man voice
-Under **Voice**, choose 👩 **Lady** or 👨 **Man**, then pick a voice from the list. Voices are grouped by accent and
-the best ones are listed first (the letter after a name is its quality grade, and A is best). Tap **▶ Hear sample**
-to hear a short story in that voice.
-
-### 4. Add expression
-Select some words, then tap a tool in the toolbar, or type the tags yourself:
-
-| Tool | Tag | What it does |
-| --- | --- | --- |
-| ⏸ Pause | `[pause 1s]`, `[pause 500ms]`, `[pause long]` | Silence |
-| ↑ Pitch high / ↓ Pitch low | `[pitch high]…[/pitch]` (also `x-low`, `low`, `x-high`, `+20%`, `1.3`) | Higher or lower voice |
-| 🐢 Slow / 🐇 Fast | `[slow]…[/slow]`, `[fast]…[/fast]`, `[slow 0.6]` | Speed |
-| ✨ Emphasis | `[emph]…[/emph]` | Short pause, then slower and stronger |
-| ❓ Question | `[ask]…[/ask]` | Question intonation, even without `?` |
-
-Sentences ending in `?` automatically get question intonation, and `…` and new paragraphs add natural pauses.
-
-### 5. Shape the delivery
-Under **Delivery**:
-- **Storyteller mode** adds breathing pauses, gentle pitch variation and livelier exclamations.
-- **Question intonation**: *Natural*, *Strong rise* or *Off*.
-- **Speed**, **Pitch**, **Pause length** and **Volume** sliders. **Reset delivery** restores the defaults.
-
-The **Performance preview** shows exactly how your text will be performed, and highlights each sentence as it plays.
-
-### 6. Play and download
-- **▶ Play** / **⏸ Pause** / **■ Stop** are in the bar at the bottom. On a computer, `Ctrl+Enter` plays and `Esc` stops.
-- **⬇ Download** saves the audio file. If you've just played the same text, the download is instant.
-- Slow engines (e.g. My Voice on a computer without a graphics card) prepare audio first, then play without gaps.
-  The status bar shows a countdown.
-
-### 7. Create **My Voice**
+### 🎤 Use your own voice
 1. Choose **🎤 My Voice**, then **Create my voice**.
-2. Give it a name and tick the consent box (*it must be your own voice*).
-3. Tap **● Record** and read the passage shown, about **20–30 seconds** (minimum 10 s). You can also **upload** a
-   recording of yourself (WAV, MP3, FLAC, OGG; M4A/WebM in Docker).
-4. Listen back, then tap **Create voice**. It's ready in about 10–60 seconds.
-
-Tips for a good clone:
-- Use a quiet room and start speaking right away. The model listens most closely to the first ~10 seconds.
-- Read with the feeling you want, such as warmly or like a storyteller. The clone copies your style.
-- Not happy with it? **🗑 Delete** it and record again.
+2. Type a name and tick the consent box (it must be **your** voice).
+3. Tap **● Record** and read the passage on screen for **20–30 seconds** in a quiet room.
+4. Tap **Create voice**. In about a minute, everything you type plays in your voice.
 
 ---
 
-## 📱 Use it on your phone
+## 📱 On your phone
 
-The page works in Safari (iPhone/iPad) and Chrome (Android). The layout adapts, buttons are large enough to tap,
-and the recording screen opens full-screen.
+The app works in Safari and Chrome on phones. To **record your voice**, though, the page must use **https://**
+(browsers block the microphone on plain `http://`). The easiest way to test from your PC:
 
-> **Important:** browsers only allow the **microphone** (for My Voice) and fast voices on **secure pages**:
-> `https://…` or `http://localhost`. Opening `http://192.168.x.x:8080` from your phone works for listening, but
-> recording won't work. Use one of these options for full features:
+1. In VS Code, open the **Ports** tab (next to *Terminal*) and click **Forward a Port**. Enter `8080`.
+2. Right-click it and choose **Port Visibility → Public**.
+3. Open the `https://…` address on your phone.
 
-**Option A: quick test from your PC (VS Code port forwarding)**
-1. Start the app on your PC (`docker compose up -d`).
-2. In VS Code, open the **Ports** panel (*View → Terminal*, then the **Ports** tab) and click **Forward a Port**. Enter
-   `8080`.
-3. Right-click the port and choose **Port Visibility → Public**. Then copy the **Forwarded Address**
-   (`https://…devtunnels.ms`).
-4. Open that address on your phone.
-
-**Option B: a permanent HTTPS address.** Deploy on a server with your own domain. Caddy adds a free HTTPS certificate
-automatically; see [Deploy on a server with HTTPS](#deploy-on-a-server-with-https).
-
-Phone tips:
-- On iPhone, playback works even with the **silent switch** on (iOS 16.4+). Otherwise, turn the ringer on.
-- On phones, Natural voices use the smaller **~110 MB** model by default. Use Wi-Fi for the first load.
-- Downloads go to *Files → Downloads* (iPhone) or the *Downloads* folder (Android).
+For a permanent address, put it on a server (next section).
 
 ---
 
-## 🐳 Deploy with Docker
+## 🌍 Put it online (with HTTPS)
 
-### What gets deployed
+On a Linux server with a domain name (e.g. `voice.example.com`):
 
-| Container | Purpose | Port |
-| --- | --- | --- |
-| `text2voice` | The web app and API (Node.js, non-root, read-only filesystem) | `8080` |
-| `text2voice-voice-clone` | **My Voice** cloning service (Chatterbox) | internal only |
-| `text2voice-caddy` | *Optional* HTTPS reverse proxy (Let's Encrypt) | `80`, `443` |
-
-**Requirements:** about **12 GB free disk space** (images plus voice models) and **8 GB RAM** (16 GB recommended for
-My Voice). An NVIDIA GPU is optional but makes My Voice much faster.
-
-### Deploy on your computer
-
-```powershell
-copy .env.example .env               # optional settings (Azure key, port, ...)
-docker compose up -d --build         # build and start in the background
-docker compose ps                    # check: all containers should be "running" / "healthy"
-```
-
-Open **http://localhost:8080**. On first start, **My Voice** downloads its model (~4 GB). The app shows
-*"Voice service ready"* when it's done.
-
-### Deploy on a server with HTTPS
-On a Linux server (VPS or cloud VM) with a domain name, for example `voice.example.com`:
-
-1. **Point your domain** to the server: create a DNS **A record** pointing to the server's public IP.
-2. **Open ports 80 and 443** in the server's firewall or cloud security group.
-3. **Install Docker and get the code:**
+1. Point the domain's DNS **A record** to your server, and open ports **80** and **443**.
+2. Run:
    ```bash
    curl -fsSL https://get.docker.com | sh
    git clone https://github.com/ttolaaa/text2voice_app.git && cd text2voice_app
    cp .env.example .env
    ```
-4. **Edit `.env`** and enable HTTPS:
+3. Edit `.env` and add:
    ```ini
    COMPOSE_PROFILES=https
    DOMAIN=voice.example.com
    TRUST_PROXY=1
    PORT=127.0.0.1:8080
    ```
-5. **Start everything:**
-   ```bash
-   docker compose up -d --build
-   ```
-6. Open **https://voice.example.com**. Caddy gets and renews the certificate automatically.
+4. Run `docker compose up -d --build`, then open **https://voice.example.com**. The HTTPS certificate is set up
+   automatically.
 
-### NVIDIA GPU (faster My Voice)
-Install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/), then run:
+---
+
+## 🛠️ Useful commands
+
+| What | Command |
+| --- | --- |
+| Start | `docker compose up -d` |
+| Stop | `docker compose down` |
+| See if it's running | `docker compose ps` |
+| See logs | `docker compose logs -f` |
+| Update to the latest code | `git pull` then `docker compose up -d --build` |
+| Save and publish your changes | `git add -A` → `git commit -m "message"` → `git push` |
+
+---
+
+## ❓ Problems?
+
+| Problem | Fix |
+| --- | --- |
+| **Create voice** button is grey | Enter a name, tick consent, and record at least 10 seconds. |
+| Can't record on a phone | Use an `https://` address (see *On your phone*) and allow microphone access. |
+| "My Voice service is starting…" | The first start downloads ~4 GB. Wait a few minutes. |
+| Port 8080 is busy | Put `PORT=9000` in `.env`, then open http://localhost:9000. |
+| `git push` says *No configured push destination* | Run `git remote add origin <your-repo-url>`, then `git push -u origin main`. |
+
+---
+
+## ⚙️ Settings (optional)
+
+Put these in the `.env` file, then run `docker compose up -d`:
+
+| Setting | What it does |
+| --- | --- |
+| `PORT=8080` | Which port the app uses |
+| `AZURE_SPEECH_KEY=…` and `AZURE_SPEECH_REGION=…` | Turn on ☁️ Azure voices |
+| `CLONE_URL=` | Leave it empty to turn off My Voice |
+| `COMPOSE_PROFILES=https` and `DOMAIN=…` | Turn on automatic HTTPS |
+
+<details>
+<summary><b>More details (for developers)</b></summary>
+
+### What runs
+- **text2voice**: the web app (Node.js) on port 8080.
+- **voice-clone**: the My Voice service (Chatterbox). It's private and only the app can reach it.
+- **caddy** *(optional)*: the HTTPS proxy, which only starts when `COMPOSE_PROFILES=https` is set.
+
+You need about **12 GB of free disk** and **8 GB of RAM** (16 GB recommended for My Voice).
+
+### Faster My Voice with an NVIDIA GPU
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
 ```
 
-### Configuration
-All settings live in `.env` (copy it from `.env.example`). After changing it, run `docker compose up -d`.
+### More settings
+`CLONE_MODEL=turbo|standard` (standard is slower but adds an *Expressiveness* slider) ·
+`CLONE_DEVICE=auto|cpu|cuda` · `AZURE_REQUESTS_PER_MINUTE` · `AZURE_CHARS_PER_HOUR`
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| `PORT` | `8080` | Port the app is published on (`127.0.0.1:8080` keeps it private behind the proxy) |
-| `COMPOSE_PROFILES` | — | `https` turns on the Caddy HTTPS proxy |
-| `DOMAIN` | `localhost` | Your domain name for HTTPS |
-| `TRUST_PROXY` | `0` | `1` when behind Caddy or another reverse proxy |
-| `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION` | — | Turn on ☁️ Azure voices (Azure portal → Speech service → *Keys and Endpoint*) |
-| `AZURE_REQUESTS_PER_MINUTE`, `AZURE_CHARS_PER_HOUR` | `30`, `60000` | Per-user limits that protect your Azure bill |
-| `CLONE_URL` | built-in service | Set to empty (`CLONE_URL=`) to turn off My Voice |
-| `CLONE_MODEL` | `turbo` | `turbo` (faster) or `standard` (slower, adds an *Expressiveness* slider) |
-| `CLONE_DEVICE` | `auto` | `auto`, `cpu` or `cuda` |
+### Text tags
+You can type these instead of using the toolbar:
+`[pause 1s]` · `[pitch high]…[/pitch]` · `[slow]…[/slow]` · `[fast]…[/fast]` · `[emph]…[/emph]` · `[ask]…[/ask]`
 
-### Everyday commands
+### Auto-deploy on every commit
+Run `git config core.hooksPath .githooks` once. After that, every commit runs the tests and restarts Docker with the
+new code. GitHub Actions also builds the images on every push.
 
-```bash
-docker compose ps                         # status
-docker compose logs -f                    # live logs (Ctrl+C to exit)
-docker compose logs -f voice-clone        # logs of one service
-docker compose restart                    # restart
-docker compose down                       # stop (your data is kept)
-git pull && docker compose up -d --build  # update to the latest version
-```
-
-**Back up cloned voices** (they're stored in a Docker volume):
+### Back up cloned voices
 ```bash
 docker run --rm -v text2voice_clone-voices:/data -v "$PWD":/backup alpine tar czf /backup/voices-backup.tgz -C /data .
 ```
 
-### Troubleshooting
-
-| Problem | Fix |
-| --- | --- |
-| "My Voice service is not reachable" / "starting" | The first start downloads ~4 GB. Wait, and check `docker compose logs -f voice-clone`. |
-| Can't record on a phone | Use an **https://** address (see [Use it on your phone](#-use-it-on-your-phone)), and allow microphone access. |
-| **Create voice** stays grey | Enter a name, tick consent, and record at least 10 seconds. |
-| Port 8080 already in use | Set another port in `.env`, e.g. `PORT=9000`. |
-| HTTPS certificate not issued | Make sure DNS points to the server and ports 80 and 443 are open. Check `docker compose logs caddy`. |
-| Out of disk space | `docker system prune` removes old images. |
-
----
-
-## 🔄 Auto-update on every commit
-
-Turn on the git hooks once per clone:
-
+### Run without Docker
 ```powershell
-git config core.hooksPath .githooks      # or: ./scripts/install-hooks.ps1  /  sh scripts/install-hooks.sh
+node scripts/fetch-assets.mjs   # one time: downloads the voice models
+node server/index.js            # http://localhost:8080
+node --test                     # run the tests
 ```
 
-| Hook | What it does |
-| --- | --- |
-| `pre-commit` | Runs the unit tests. A failing test stops the commit. |
-| `post-commit` | Rebuilds the images from the **committed** code and restarts the containers. |
-| `post-merge` | Does the same after `git pull`. |
+### Privacy
+Natural voices run in your browser. My Voice recordings stay on your server and can only be used from the browser
+that created them. Every cloned clip carries an inaudible AI watermark. Azure voices send text to Microsoft Azure.
 
-- If Docker isn't running, the deploy is skipped and the commit still succeeds.
-- Use `TEXT2VOICE_SKIP_DEPLOY=1` to skip a single deploy, and `TEXT2VOICE_GPU=1` to deploy with the GPU override.
-- Open browser tabs show a **"new version"** banner after each deploy.
-- **GitHub Actions** (`.github/workflows/docker.yml`) tests and builds both images on every push. Pushes to `main`
-  publish them to `ghcr.io/<owner>/<repo>` and `ghcr.io/<owner>/<repo>-voice-clone`.
+### Project layout
+`public/` web app · `server/` Node.js server · `voice-clone/` My Voice service · `scripts/` setup and deploy
+helpers · `tests/` unit tests
 
----
+**Licences:** Kokoro-82M and kokoro-js (Apache-2.0), Chatterbox (MIT), onnxruntime-web (MIT).
 
-## 📤 Push to GitHub
-
-This project lives at **https://github.com/ttolaaa/text2voice_app**.
-
-### Everyday: save and publish a change
-```powershell
-git add -A                          # stage everything you changed
-git commit -m "Describe the change" # runs the tests first; redeploys Docker locally if installed
-git push                            # uploads to GitHub; GitHub Actions then builds the images
-```
-Check the **Actions** tab on GitHub to follow the build. The first build of the large voice-clone image takes about
-10–15 minutes.
-
-### Connecting a brand-new repository
-Only needed if you publish this project to a different, empty repository:
-```powershell
-git remote add origin https://github.com/<your-username>/<repo>.git
-git push -u origin main               # -u makes later pushes a plain `git push`
-```
-The first push opens a browser window to sign in to GitHub.
-
-### Troubleshooting
-
-| Message | Fix |
-| --- | --- |
-| `fatal: No configured push destination` | No repository is linked yet. Run `git remote add origin <repo-url>`, then `git push -u origin main`. |
-| `remote origin already exists` | Already linked. Check it with `git remote -v`, or change it with `git remote set-url origin <repo-url>`. |
-| `rejected … (fetch first)` / `non-fast-forward` | GitHub has commits you don't have. Run `git pull --rebase`, then `git push`. |
-| `Authentication failed` | Sign in again when asked, or use a [personal access token](https://github.com/settings/tokens) as the password. |
-| Tests fail and the commit is stopped | Fix the failing test (`node --test`), or skip the check once with `git commit --no-verify`. |
-
-> **Tip:** don't run GitHub's quick-start line `echo "# name" >> README.md` in Windows PowerShell 5.1. It writes
-> UTF-16 text that corrupts a UTF-8 README. Edit the file in VS Code instead.
-
-**Never commit secrets.** `.env` (your Azure key), downloaded voice models (`public/vendor`, `public/models`) and
-cloned-voice data are already excluded by `.gitignore`.
-
----
-
-## 💻 Local development (without Docker)
-
-```powershell
-node scripts/fetch-assets.mjs          # one-time: downloads and verifies the Natural voice models (~450 MB)
-node server/index.js                   # http://localhost:8080
-node --test                            # run the unit tests
-```
-
-Optional: run the My Voice service locally (Python 3.10+):
-```powershell
-cd voice-clone
-python -m venv .venv
-.venv\Scripts\pip install torch torchaudio -r requirements.txt
-$env:VOICE_DATA_DIR="$PWD\data"; .venv\Scripts\uvicorn app:app --port 8000
-# in another terminal, from the project folder:
-$env:CLONE_URL="http://127.0.0.1:8000"; node server/index.js
-```
-
-`ASSETS_DIR` lets you keep the downloaded models outside the project folder, for example outside a OneDrive-synced
-folder.
-
----
-
-## 🔒 Privacy and security
-
-- **Natural voices** run entirely in your browser. Your text isn't sent anywhere.
-- **My Voice** recordings stay on your server in the `clone-voices` Docker volume, never with a third party. Each
-  voice can only be used and deleted from the browser that created it: the server stores only a hash of a secret
-  owner token. Creating a voice requires a consent statement, and every generated clip carries an inaudible
-  [watermark](https://github.com/resemble-ai/Perth) marking it as AI-made.
-- **Azure voices** send the text to Microsoft Azure AI Speech. Your key stays on the server and is never sent to the
-  browser.
-- The app sends strict security headers (CSP and others) and accepts API calls from its own pages only. It
-  rate-limits paid and heavy endpoints, and runs as a non-root user.
-
----
-
-## 🗂 Project layout
-
-```
-public/                 web app (HTML, CSS, JavaScript)
-  js/app.js             UI
-  js/parser.js          tags + punctuation -> what to say and where to pause
-  js/engines/           kokoro.js (Natural), azure.js, myvoice.js, browser.js (Basic)
-  js/stream-player.js   gapless playback (Web Audio)
-  js/recorder.js        microphone recording -> WAV
-server/                 Node.js server: static files, Azure proxy, My Voice proxy
-voice-clone/            My Voice service (FastAPI + Chatterbox) with its own Dockerfile
-scripts/                model download (pinned + verified), deploy, git hook installers
-tests/                  unit tests (node --test)
-Dockerfile, docker-compose.yml, docker-compose.gpu.yml, Caddyfile, .env.example
-```
-
-**Licences:** Kokoro-82M and kokoro-js (Apache-2.0), Chatterbox (MIT, Resemble AI), onnxruntime-web (MIT).
+</details>
