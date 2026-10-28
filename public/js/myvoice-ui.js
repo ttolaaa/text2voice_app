@@ -46,7 +46,8 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
   const setRecStatus = (msg) => (els.recStatus.textContent = msg);
 
   function updateSubmit() {
-    els.submit.disabled = busy || !els.name.value.trim() || !els.consent.checked || !take || take.seconds < MIN_SECONDS;
+    const longEnough = take && (take.seconds === null || take.seconds >= MIN_SECONDS);
+    els.submit.disabled = busy || !els.name.value.trim() || !els.consent.checked || !longEnough;
   }
 
   function setTake(next) {
@@ -56,12 +57,17 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
     if (take) {
       take.url = URL.createObjectURL(take.wav);
       els.playback.src = take.url;
-      els.time.textContent = fmt(take.seconds);
-      setRecStatus(
-        take.seconds < MIN_SECONDS
-          ? `That was ${Math.round(take.seconds)}s — please record at least ${MIN_SECONDS} seconds.`
-          : `Got ${Math.round(take.seconds)}s of audio. Listen back, then create your voice (or record again).`,
-      );
+      if (take.seconds === null) {
+        els.time.textContent = '—';
+        setRecStatus('This browser can’t preview that format, but the server will convert it. Create your voice when ready.');
+      } else {
+        els.time.textContent = fmt(take.seconds);
+        setRecStatus(
+          take.seconds < MIN_SECONDS
+            ? `That was ${Math.round(take.seconds)}s — please record at least ${MIN_SECONDS} seconds.`
+            : `Got ${Math.round(take.seconds)}s of audio. Listen back, then create your voice (or record again).`,
+        );
+      }
     } else {
       els.playback.removeAttribute('src');
     }
@@ -86,12 +92,12 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
   }
 
   async function stopRecording() {
-    const blob = await recorder.stop();
     els.recBtn.textContent = '● Record again';
     els.recBtn.classList.remove('recording');
-    if (!blob) return;
     try {
-      setTake(await toWav(blob));
+      const recorded = await recorder.stop();
+      if (recorded) setTake(recorded);
+      else setRecStatus('No audio was captured — check that the right microphone is selected and try again.');
     } catch (err) {
       setRecStatus(`Could not process the recording: ${err.message}`);
     }
@@ -118,7 +124,7 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
     setRecStatus('Creating your voice… this usually takes 10–60 seconds.');
     try {
       const consentText = `${els.consent.parentElement.textContent.replace(/\s+/g, ' ').trim()} | Read aloud: "${CONSENT_SENTENCE}"`;
-      const voice = await engine.create({ wav: take.wav, name: els.name.value.trim(), consentText });
+      const voice = await engine.create({ wav: take.wav, filename: take.filename, name: els.name.value.trim(), consentText });
       els.dialog.close();
       onChange(voice.id);
     } catch (err) {
@@ -164,7 +170,9 @@ export function initMyVoiceUI({ engine, onChange, onStatus = () => {} }) {
     if (recorder.recording) recorder.cancel();
     setRecStatus('Reading file…');
     try {
-      setTake(await toWav(file));
+      const converted = await toWav(file);
+      // Keep the original name/type when the server has to convert the file itself.
+      setTake(converted.original ? { ...converted, filename: file.name } : converted);
     } catch {
       setRecStatus('That file could not be read as audio. Try a WAV or MP3 file.');
     }

@@ -15,6 +15,7 @@ import os
 import re
 import secrets
 import shutil
+import subprocess
 import threading
 import time
 import traceback
@@ -131,11 +132,32 @@ def public_meta(meta: dict) -> dict:
     return {k: meta[k] for k in ("id", "name", "created", "seconds")}
 
 
+def decode_with_ffmpeg(data: bytes) -> tuple[np.ndarray, int] | None:
+    """Fallback for formats libsndfile can't read (M4A/AAC, WebM, ...). Returns None if ffmpeg is missing."""
+    if not shutil.which("ffmpeg"):
+        return None
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-i", "pipe:0",
+             "-t", str(MAX_SECONDS + 1), "-ac", "1", "-ar", str(SAMPLE_RATE), "-f", "wav", "pipe:1"],
+            input=data, capture_output=True, timeout=120, check=True,
+        )
+        audio, sr = sf.read(io.BytesIO(result.stdout), dtype="float32", always_2d=True)
+        return audio, sr
+    except (subprocess.SubprocessError, RuntimeError, OSError):
+        return None
+
+
 def decode_audio(data: bytes) -> np.ndarray:
     try:
         audio, sr = sf.read(io.BytesIO(data), dtype="float32", always_2d=True)
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail="Unsupported audio file - please upload a WAV recording.") from exc
+    except Exception:
+        decoded = decode_with_ffmpeg(data)
+        if decoded is None:
+            raise HTTPException(
+                status_code=400, detail="Unsupported audio format - please record in the app or upload WAV, MP3, FLAC or OGG."
+            ) from None
+        audio, sr = decoded
     audio = audio.mean(axis=1)
     if sr != SAMPLE_RATE:
         import librosa

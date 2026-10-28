@@ -13,6 +13,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     VOICE_DATA_DIR=/data/voices
 
 WORKDIR /app
+# ffmpeg lets the service convert uploads the browser couldn't (M4A/AAC voice memos, WebM, ...).
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ffmpeg \
+ && rm -rf /var/lib/apt/lists/*
 RUN pip install torch==2.6.0 torchaudio==2.6.0 --index-url "${TORCH_INDEX}"
 COPY requirements.txt .
 RUN pip install -r requirements.txt

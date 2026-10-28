@@ -94,9 +94,9 @@ export class MyVoiceEngine {
     return status;
   }
 
-  async create({ wav, name, consentText }) {
+  async create({ wav, filename = 'recording.wav', name, consentText }) {
     const form = new FormData();
-    form.append('audio', wav, 'recording.wav');
+    form.append('audio', wav, filename);
     form.append('name', name);
     form.append('consent', 'yes');
     form.append('consent_text', consentText);
